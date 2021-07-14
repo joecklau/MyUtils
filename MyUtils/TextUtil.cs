@@ -205,25 +205,20 @@ namespace MyUtils
             return string.Equals(compare, compareTo, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static bool InvariantStartsWith(this string compare, string compareTo)
-        {
-            return compare.StartsWith(compareTo, StringComparison.InvariantCultureIgnoreCase);
-        }
+        public static bool InvariantStartsWith(this string compare, string compareTo) =>
+            string.IsNullOrWhiteSpace(compare) || string.IsNullOrWhiteSpace(compareTo) ? false : compare.StartsWith(compareTo, StringComparison.InvariantCultureIgnoreCase);
 
-        public static bool InvariantEndsWith(this string compare, string compareTo)
-        {
-            return compare.EndsWith(compareTo, StringComparison.InvariantCultureIgnoreCase);
-        }
+        public static bool InvariantEndsWith(this string compare, string compareTo) =>
+            string.IsNullOrWhiteSpace(compare) || string.IsNullOrWhiteSpace(compareTo) ? false : 
+            compare.EndsWith(compareTo, StringComparison.InvariantCultureIgnoreCase);
 
-        public static bool InvariantContains(this string compare, string compareTo)
-        {
-            return compare.IndexOf(compareTo, StringComparison.OrdinalIgnoreCase) >= 0;
-        }
+        public static bool InvariantContains(this string compare, string compareTo) => 
+            string.IsNullOrWhiteSpace(compare) || string.IsNullOrWhiteSpace(compareTo) ? false : 
+            compare.IndexOf(compareTo, StringComparison.OrdinalIgnoreCase) >= 0;
 
-        public static bool InvariantContains(this IEnumerable<string> compare, string compareTo)
-        {
-            return compare.Contains<string>(compareTo, (IEqualityComparer<string>)StringComparer.InvariantCultureIgnoreCase);
-        }
+        public static bool InvariantContains(this IEnumerable<string> compare, string compareTo) =>
+            compare == null || !compare.Any() ? false : 
+            compare.Contains(compareTo, StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// How do I read an attribute on a class at runtime?
