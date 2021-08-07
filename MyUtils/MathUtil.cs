@@ -36,7 +36,7 @@ namespace MyUtils
         /// <param name="value"></param>
         /// <param name="other"></param>
         /// <returns></returns>
-        public static double Max(this int value, int other) => Math.Max(value, other);
+        public static int AtLeast(this int value, int other) => Math.Max(value, other);
 
         /// <summary>
         /// Get Larger one between <paramref name="value"/> and <paramref name="other"/>
@@ -44,7 +44,7 @@ namespace MyUtils
         /// <param name="value"></param>
         /// <param name="other"></param>
         /// <returns></returns>
-        public static double Max(this double value, double other) => Math.Max(value, other);
+        public static double AtLeast(this double value, double other) => Math.Max(value, other);
 
         /// <summary>
         /// Get Smaller one between <paramref name="value"/> and <paramref name="other"/>
@@ -52,7 +52,7 @@ namespace MyUtils
         /// <param name="value"></param>
         /// <param name="other"></param>
         /// <returns></returns>
-        public static double Min(this int value, int other) => Math.Min(value, other);
+        public static int AtMost(this int value, int other) => Math.Min(value, other);
 
         /// <summary>
         /// Get Smaller one between <paramref name="value"/> and <paramref name="other"/>
@@ -60,7 +60,7 @@ namespace MyUtils
         /// <param name="value"></param>
         /// <param name="other"></param>
         /// <returns></returns>
-        public static double Min(this double value, double other) => Math.Min(value, other);
+        public static double AtMost(this double value, double other) => Math.Min(value, other);
 
     }
 }
