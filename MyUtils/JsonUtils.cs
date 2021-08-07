@@ -22,5 +22,12 @@ namespace MyUtils
         /// <param name="src"></param>
         /// <returns></returns>
         public static string ToUtf8Json(this object src) => Utf8Json.JsonSerializer.ToJsonString(src);
+
+        /// <summary>
+        /// Use dotnet core default <see cref="JsonSerializer"/> to <see cref="JsonSerializer.Serialize"/> <paramref name="obj"/>
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string ToJson(this object obj) => JsonSerializer.Serialize(obj);
     }
 }

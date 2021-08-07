@@ -122,5 +122,37 @@ namespace MyUtils
         //    return list.Intersect(list2).Distinct().Count() == list2.Distinct().Count();
         //}
 
+        /// <summary>
+        /// To support action like <see cref="List{T}.AddRange(IEnumerable{T})"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="inboundList"></param>
+        public static void AddRange<T>(this HashSet<T> list, IEnumerable<T> inboundList)
+        {
+            if (inboundList == null) return;
+
+            foreach (var item in inboundList)
+            {
+                list.Add(item);
+            }
+        }
+
+        public static List<T> Intersect<T>(params IEnumerable<T>[] lists)
+        {
+            if (!lists.Any() || lists.Any(list => !list.Any()))
+            {
+                return new List<T>();
+            }
+
+            var tempList = lists[0];
+            for (int i = 1; i < lists.Length; i++)
+            {
+                tempList = tempList.Intersect(lists[i]);
+            }
+
+            return tempList.ToList();
+        }
+
     }
 }
