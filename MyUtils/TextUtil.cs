@@ -134,6 +134,39 @@ namespace MyUtils
         }
 
         /// <summary>
+        /// See https://stackoverflow.com/a/7170953/4684232
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="suffixToRemove"></param>
+        /// <param name="comparisonType"></param>
+        /// <returns></returns>
+        public static string TrimEnd(this string input, string suffixToRemove, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        {
+            if (suffixToRemove != null && input.EndsWith(suffixToRemove, comparisonType))
+            {
+                return input.Substring(0, input.Length - suffixToRemove.Length);
+            }
+
+            return input;
+        }
+
+        public static string TrimEndRecursive(this string input, params string[] suffixesToRemove)
+        {
+            string result = input.ToString();
+            foreach (var suffixToRemove in suffixesToRemove.WhereNotNull())
+            {
+                result = result.TrimEnd(suffixToRemove, StringComparison.InvariantCultureIgnoreCase);
+            }
+
+            if (string.Equals(result, input))
+            {
+                return result;
+            }
+
+            return TrimEndRecursive(result, suffixesToRemove);
+        }
+
+        /// <summary>
         /// Replace invalid chars found in <see cref="Path.GetInvalidFileNameChars()"/>
         /// </summary>
         /// <param name="source"></param>
