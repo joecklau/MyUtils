@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace MyUtils
 {
@@ -100,6 +101,18 @@ namespace MyUtils
         {
             return source != null && toCheck != null && source.IndexOf(toCheck, comp) >= 0;
         }
+
+        /// <summary>
+        /// Tell if the <paramref name="text"/> contains whole word.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="wholeWord"></param>
+        /// <param name="matchCase"></param>
+        /// <returns></returns>
+        public static bool ContainsWholeWord(this string text, string wholeWord, bool matchCase = false) =>
+            text != null &&
+            wholeWord != null &&
+            Regex.IsMatch(text, $"\\b{Regex.Escape(wholeWord)}\\b", matchCase ? RegexOptions.None : RegexOptions.IgnoreCase);
 
         /// <summary>
         /// Support String.compare with different StringComparison
