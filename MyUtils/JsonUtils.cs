@@ -27,7 +27,8 @@ namespace MyUtils
         /// Use dotnet core default <see cref="JsonSerializer"/> to <see cref="JsonSerializer.Serialize"/> <paramref name="obj"/>
         /// </summary>
         /// <param name="obj"></param>
+        /// <param name="writeIndented"></param>
         /// <returns></returns>
-        public static string ToJson(this object obj) => JsonSerializer.Serialize(obj);
+        public static string ToJson(this object obj, bool writeIndented = false) => JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = writeIndented });
     }
 }
