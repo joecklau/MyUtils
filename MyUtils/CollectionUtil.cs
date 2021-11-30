@@ -10,8 +10,51 @@ namespace MyUtils
 {
     public static class CollectionUtil
     {
+        public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> list) => list.OrderBy(x => x);
+
+        public static IOrderedEnumerable<T> OrderByDescending<T>(this IEnumerable<T> list) => list.OrderByDescending(x => x);
+
         /// <summary>
-        /// Maximums the or default.
+        /// Take middle <paramref name="ratio"/> part from <paramref name="list"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">The list.</param>
+        /// <param name="ratio">The ratio.</param>
+        /// <param name="keepAtLeastOne">Tell to keep at least one item if the ratio is too aggressive</param>
+        /// <returns></returns>
+        public static IEnumerable<T> MiddlePartByRatio<T>(this IOrderedEnumerable<T> list, double ratio, bool keepAtLeastOne = false)
+        {
+            if (ratio > 1.0) throw new ArgumentException($"{ratio} is not a valid ratio.", nameof(ratio));
+
+            if (list == null || !list.Any()) return list;
+
+            var originalLength = list.Count();
+            var result = list.Skip((int)Math.Round(originalLength * (1.0 - ratio) / 2)).Take((int)Math.Round(originalLength * ratio)).ToList();
+            if (result.Count == 0 && keepAtLeastOne)
+            {
+                return new List<T>() { list.MedianOrDefault() };
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Median or default.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">The list.</param>
+        /// <returns></returns>
+        public static T MedianOrDefault<T>(this IOrderedEnumerable<T> list)
+        {
+            if (list == null || !list.Any()) return default(T);
+
+            if (list.Count() == 1) return list.First();
+
+            return list.ElementAt(list.Count() / 2);
+        }
+
+        /// <summary>
+        /// Maximums or default.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list">The list.</param>
@@ -19,7 +62,7 @@ namespace MyUtils
         public static T MaxOrDefault<T>(this IEnumerable<T> list) => (list != null && list.Any()) ? list.Max() : default(T);
 
         /// <summary>
-        /// Minimums the or default.
+        /// Minimums or default.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list">The list.</param>
