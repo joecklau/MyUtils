@@ -109,6 +109,27 @@ namespace MyUtils
         }
 
         /// <summary>
+        /// Return Max <paramref name="dateTimes"/>
+        /// </summary>
+        /// <param name="dateTimes"></param>
+        /// <returns></returns>
+        public static DateTime GetMax(params DateTime[] dateTimes)
+        {
+            if (dateTimes == null || !dateTimes.Any())
+            {
+                return DateTime.MinValue;
+            }
+
+            var kinds = dateTimes.GroupBy(x=>x.Kind).Select(x=>x.Key).ToArray();
+            if (kinds.Length != 1)
+            {
+                throw new ArgumentException($"multiple kinds are not supported. kinds found: {kinds.ToJson()}", nameof(dateTimes));
+            }
+
+            return new DateTime(dateTimes.Select(dt => dt.Ticks).Max(), kinds.Single());
+        }
+
+        /// <summary>
         /// Return Min <paramref name="dateTimes"/> in UTC
         /// </summary>
         /// <param name="dateTimes"></param>
@@ -121,6 +142,27 @@ namespace MyUtils
             }
 
             return new DateTime(dateTimes.Select(dt => dt.ToUniversalTime().Ticks).Min(), DateTimeKind.Utc);
+        }
+
+        /// <summary>
+        /// Return Min <paramref name="dateTimes"/>
+        /// </summary>
+        /// <param name="dateTimes"></param>
+        /// <returns></returns>
+        public static DateTime GetMin(params DateTime[] dateTimes)
+        {
+            if (dateTimes == null || !dateTimes.Any())
+            {
+                return DateTime.MinValue;
+            }
+
+            var kinds = dateTimes.GroupBy(x => x.Kind).Select(x => x.Key).ToArray();
+            if (kinds.Length != 1)
+            {
+                throw new ArgumentException($"multiple kinds are not supported. kinds found: {kinds.ToJson()}", nameof(dateTimes));
+            }
+
+            return new DateTime(dateTimes.Select(dt => dt.Ticks).Min(), kinds.Single());
         }
 
         public static string GetCurrentUnixTime()
