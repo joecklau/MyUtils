@@ -42,7 +42,7 @@ namespace MyUtils
         //{
         //    if (logger.IsEnabled(LogLevel.Debug))
         //    {
-        //        logger.LogDebugWithCaller(generateMessage());
+        //        logger.LogDebug(generateMessage());
         //    }
         //}
     }
