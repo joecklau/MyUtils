@@ -20,6 +20,30 @@ namespace MyUtils
         public static string Format(this string template, params object[] args) => string.Format(template, args);
 
         /// <summary>
+        /// https://stackoverflow.com/questions/1450774/splitting-a-string-into-chunks-of-a-certain-size
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="chunkSize"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> WholeChunks(this string str, int chunkSize)
+        {
+            for (int i = 0; i < str.Length; i += chunkSize)
+                yield return str.Substring(i, chunkSize);
+        }
+
+        /// <summary>
+        /// https://stackoverflow.com/questions/1450774/splitting-a-string-into-chunks-of-a-certain-size
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="maxChunkSize"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> ChunksUpto(this string str, int maxChunkSize)
+        {
+            for (int i = 0; i < str.Length; i += maxChunkSize)
+                yield return str.Substring(i, Math.Min(maxChunkSize, str.Length - i));
+        }
+
+        /// <summary>
         /// Equal to SQL LEFT, take left N characters
         /// </summary>
         /// <param name="src"></param>
