@@ -7,7 +7,7 @@ using System.Text;
 
 namespace MyUtils
 {
-    public class DateUtil
+    public static class DateUtil
     {
         public static TimeZoneInfo EstTimeZone => TimeZoneInfo.FindSystemTimeZoneById(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Eastern Standard Time" : "America/New_York");
         public static DateTime UnixEpoch => new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -16,6 +16,7 @@ namespace MyUtils
         public const string SimpleYMDHMSFormat = "yyyy-MM-dd HH:mm:ss";
 
         // ISO Datetime formats
+        public const string ISO8601FullFormat = "o";
         public const string ISO8601Format = "yyyy-MM-ddTHH:mm:ss.fff";
         public const string ISO8601DateFormat = "yyyy-MM-dd";
         public const string ISO8601TimeFormat = "HH:mm:ss.fff";
@@ -40,13 +41,13 @@ namespace MyUtils
         //public const string FORMAT_REPORT_DATETIMEPICKER = @"dd'/'MM'/'yyyy HH:mm:ss.ttt";
 
 
-        /// <summary>
-        /// Timediff mocked. Change on this value will be persisted to DB immediately.
-        /// </summary>
-        public virtual TimeSpan Timediff { get; set; }
-        public virtual DateTime Now { get { return DateTime.Now.Add(Timediff); } }
-        public virtual DateTime UtcNow { get { return DateTime.UtcNow.Add(Timediff); } }
-        public DateTime Today { get { return Now.Date; } }
+        ///// <summary>
+        ///// Timediff mocked. Change on this value will be persisted to DB immediately.
+        ///// </summary>
+        //public virtual TimeSpan Timediff { get; set; }
+        //public virtual DateTime Now { get { return DateTime.Now.Add(Timediff); } }
+        //public virtual DateTime UtcNow { get { return DateTime.UtcNow.Add(Timediff); } }
+        //public DateTime Today { get { return Now.Date; } }
 
         /// <summary>
         /// Minimum date accepted in the system
@@ -122,7 +123,7 @@ namespace MyUtils
                 return DateTime.MinValue;
             }
 
-            var kinds = dateTimes.GroupBy(x=>x.Kind).Select(x=>x.Key).ToArray();
+            var kinds = dateTimes.GroupBy(x => x.Kind).Select(x => x.Key).ToArray();
             if (kinds.Length != 1)
             {
                 throw new ArgumentException($"multiple kinds are not supported. kinds found: {kinds.ToJson()}", nameof(dateTimes));
@@ -207,5 +208,45 @@ namespace MyUtils
             return DateTime.MinValue;
         }
 
+        /// <summary>
+        /// Tell if the <paramref name="dt"/> is between <paramref name="startTime"/> and <paramref name="endTime"/>
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <returns></returns>
+        public static bool Between(this DateTime dt, TimeSpan startTime, TimeSpan endTime)
+        {
+            DateTime fromDt = dt.Date + startTime;
+            if (startTime > endTime && dt.TimeOfDay < startTime && dt.TimeOfDay < endTime)
+            {
+                fromDt = fromDt.AddDays(-1);
+            }
+
+            DateTime toDt = fromDt.Date + endTime;
+            if (fromDt >= toDt)
+            {
+                toDt = toDt.AddDays(1);
+            }
+
+            return dt >= fromDt && dt <= toDt;
+        }
+
+        public static DateTime FloorToLastMinute(this DateTime dt) => dt
+            .AddSeconds(-dt.Second)
+            .AddMilliseconds(-dt.Millisecond);
+
+        public static DateTime CeilToNextMinute(this DateTime dt)
+        {
+            if (dt.Second != 0 || dt.Millisecond != 0)
+            {
+                // Round-to NEXT minutes
+                dt = dt.AddSeconds(-dt.Second);
+                dt = dt.AddMilliseconds(-dt.Millisecond);
+                dt = dt.AddMinutes(1);
+            }
+
+            return dt;
+        }
     }
 }
