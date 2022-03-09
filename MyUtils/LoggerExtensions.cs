@@ -8,6 +8,7 @@ namespace MyUtils
 {
     public static class LoggerExtensions
     {
+        public static void LogDebugWithCaller(this ILogger logger, Exception exception, string message = "Debug", [CallerMemberName] string caller = null) => logger.LogDebug(exception, $"[{caller}] {message}");
         public static void LogDebugWithCaller(this ILogger logger, Func<string> generateMessage, [CallerMemberName] string caller = null) => logger.LogDebug(() => $"[{caller}] {generateMessage()}");
 
         public static void LogInformationWithCaller(this ILogger logger, Exception exception, string message = "Information", [CallerMemberName] string caller = null) => logger.LogInformation(exception, $"[{caller}] {message}");

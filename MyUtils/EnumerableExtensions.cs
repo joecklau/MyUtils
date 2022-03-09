@@ -236,6 +236,13 @@ namespace MyUtils
             return coll.Where(x => x != null);
         }
 
+        /// <summary>
+        /// Filter <paramref name="coll"/> by not <see cref="string.IsNullOrWhiteSpace(string)"/>
+        /// </summary>
+        /// <param name="coll"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> WhereNotWhitespace(this IEnumerable<string> coll) => coll.Where(x => !string.IsNullOrWhiteSpace(x));
+
         public static IEnumerable<TBase> ForAllThatAre<TBase, TActual>(this IEnumerable<TBase> sequence, Action<TActual> projection)
             where TActual : class
         {

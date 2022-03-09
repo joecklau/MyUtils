@@ -10,6 +10,51 @@ namespace MyUtils
 {
     public static class CollectionUtil
     {
+        /// <summary>
+        /// Chunking option 1 from https://stackoverflow.com/a/47683453
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="chunkMaxSize"></param>
+        /// <returns></returns>
+        public static List<T[]> AsChunks<T>(this T[] source, int chunkMaxSize)
+        {
+            var chunks = source.Length / chunkMaxSize;
+            var leftOver = source.Length % chunkMaxSize;
+            var result = new List<T[]>(chunks + 1);
+            var offset = 0;
+
+            for (var i = 0; i < chunks; i++)
+            {
+                result.Add(new ArraySegment<T>(source,
+                                               offset,
+                                               chunkMaxSize).ToArray());
+                offset += chunkMaxSize;
+            }
+
+            if (leftOver > 0)
+            {
+                result.Add(new ArraySegment<T>(source,
+                                               offset,
+                                               leftOver).ToArray());
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Chunking option 2 from https://stackoverflow.com/a/24087164
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="chunkSize"></param>
+        /// <returns></returns>
+        public static List<List<T>> ChunkBy<T>(this IEnumerable<T> source, int chunkSize) => source
+            .Select((x, i) => new { Index = i, Value = x })
+            .GroupBy(x => x.Index / chunkSize)
+            .Select(x => x.Select(v => v.Value).ToList())
+            .ToList();
+
         public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> list) => list.OrderBy(x => x);
 
         public static IOrderedEnumerable<T> OrderByDescending<T>(this IEnumerable<T> list) => list.OrderByDescending(x => x);

@@ -7,7 +7,7 @@ namespace MyUtils
 {
     public static class SecurityUtil
     {
-        public static string HashSHA1(string input)
+        public static string HashSHA1(this string input)
         {
             using (SHA1Managed sha1 = new SHA1Managed())
             {
@@ -24,7 +24,7 @@ namespace MyUtils
             }
         }
 
-        public static string MD5Hash(string input)
+        public static string MD5Hash(this string input)
         {
             StringBuilder hash = new StringBuilder();
             MD5CryptoServiceProvider md5provider = new MD5CryptoServiceProvider();

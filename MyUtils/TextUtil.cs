@@ -157,6 +157,21 @@ namespace MyUtils
         }
 
         /// <summary>
+        /// Trim the string to null
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="trimChars"></param>
+        /// <returns></returns>
+        public static string TrimToNull(this string source, params char[] trimChars) => source?.Trim(trimChars).DefaultIfWhitespace(null);
+
+        /// <summary>
+        /// Trim the string to null
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static string TrimToNull(this string source) => source?.Trim().DefaultIfWhitespace(null);
+
+        /// <summary>
         /// Trim the string to empty (even the string is null)
         /// </summary>
         /// <param name="source"></param>
