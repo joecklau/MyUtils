@@ -351,5 +351,22 @@ namespace MyUtils
             //}
         }
 
+        /// <summary>
+        /// Modified from https://stackoverflow.com/a/4405876/4684232
+        /// Change to return null/empty string instead of throwing exception
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string FirstCharToUpper(this string input)
+        {
+            switch (input)
+            {
+                //case null: throw new ArgumentNullException(nameof(input));
+                //case "": throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input));
+                case null: return null;
+                case "": return "";
+                default: return input.First().ToString().ToUpper() + input.Substring(1);
+            }
+        }
     }
 }
