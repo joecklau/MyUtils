@@ -22,6 +22,7 @@ namespace MyUtils
         /// <typeparam name="T">The type of object being copied.</typeparam>
         /// <param name="source">The object instance to copy.</param>
         /// <returns>The copied object.</returns>
+        [Obsolete("Since .net 5.0, BinaryFormatter used in this method is prohibited by-default. Change to use CloneJson<T>() instead.")]
         public static T DeepClone<T>(this T source)
         {
             if (!typeof(T).IsSerializable)
