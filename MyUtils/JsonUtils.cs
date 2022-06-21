@@ -24,6 +24,13 @@ namespace MyUtils
         public static string ToUtf8Json(this object src) => Utf8Json.JsonSerializer.ToJsonString(src);
 
         /// <summary>
+        /// Newtonsoft engine to serialize object
+        /// </summary>
+        /// <param name="src"></param>
+        /// <returns></returns>
+        public static string ToNewtonsoftJson(this object src, Newtonsoft.Json.Formatting formatting = Newtonsoft.Json.Formatting.None) => Newtonsoft.Json.JsonConvert.SerializeObject(src, formatting);
+
+        /// <summary>
         /// Use dotnet core default <see cref="JsonSerializer"/> to <see cref="JsonSerializer.Serialize"/> <paramref name="obj"/>
         /// </summary>
         /// <param name="obj"></param>
