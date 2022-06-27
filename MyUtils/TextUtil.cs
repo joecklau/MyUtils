@@ -49,7 +49,10 @@ namespace MyUtils
         /// <param name="src"></param>
         /// <param name="length"></param>
         /// <returns></returns>
-        public static string Left(this string src, int length) => src.Substring(0, length);
+        public static string Left(this string src, int length) => 
+            src is null ? null : 
+            src.Length <= length ? src :
+            src.Substring(0, length);
 
         /// <summary>
         /// Equal to SQL RIGHT, take right N characters
@@ -57,7 +60,10 @@ namespace MyUtils
         /// <param name="src"></param>
         /// <param name="length"></param>
         /// <returns></returns>
-        public static string Right(this string src, int length) => src.Substring(src.Length - length, length);
+        public static string Right(this string src, int length) =>
+            src is null ? null :
+            src.Length <= length ? src : 
+            src.Substring(src.Length - length, length);
 
         /// <summary>
         /// 10000.0m = 10,000
