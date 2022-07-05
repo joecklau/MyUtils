@@ -7,6 +7,11 @@
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.37" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MyUtils.Caching\MyUtils.Caching.csproj" />
   </ItemGroup>
 
 </Project>
