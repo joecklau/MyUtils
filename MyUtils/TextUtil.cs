@@ -208,6 +208,16 @@ namespace MyUtils
             return input;
         }
 
+        public static string TrimStart(this string input, string prefixToRemove, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        {
+            if (prefixToRemove != null && input.StartsWith(prefixToRemove, comparisonType))
+            {
+                return input.Substring(prefixToRemove.Length, input.Length - prefixToRemove.Length);
+            }
+
+            return input;
+        }
+
         public static string TrimEndRecursive(this string input, params string[] suffixesToRemove)
         {
             string result = input.ToString();
