@@ -36,5 +36,12 @@ namespace MyUtils
             return obj;
         }
 
+        public static Dictionary<string, string> GetDictionary(this IConfiguration config, string configKey)
+        {
+            var result = new Dictionary<string, string>();
+            config.GetSection(configKey).Bind(result);
+
+            return result;
+        }
     }
 }
