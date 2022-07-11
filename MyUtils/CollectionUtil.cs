@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MyUtils
 {
@@ -242,5 +243,25 @@ namespace MyUtils
             return tempList.ToList();
         }
 
+        /// <summary>
+        /// Async version ToDictionary. See https://stackoverflow.com/a/54246120/4684232
+        /// </summary>
+        /// <typeparam name="TInput"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="enumerable"></param>
+        /// <param name="syncKeySelector"></param>
+        /// <param name="asyncValueSelector"></param>
+        /// <returns></returns>
+        public static async Task<Dictionary<TKey, TValue>> ToDictionaryAsync<TInput, TKey, TValue>(
+            this IEnumerable<TInput> enumerable,
+            Func<TInput, TKey> syncKeySelector,
+            Func<TInput, Task<TValue>> asyncValueSelector) where TKey : notnull
+        {
+            KeyValuePair<TKey, TValue>[] keyValuePairs = await Task.WhenAll(
+                enumerable.Select(async input => new KeyValuePair<TKey, TValue>(syncKeySelector(input), await asyncValueSelector(input)))
+            );
+            return keyValuePairs.ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
     }
 }
