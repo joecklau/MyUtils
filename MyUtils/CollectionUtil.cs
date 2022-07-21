@@ -108,12 +108,28 @@ namespace MyUtils
         public static T MaxOrDefault<T>(this IEnumerable<T> list) => (list != null && list.Any()) ? list.Max() : default(T);
 
         /// <summary>
+        /// Maximums or default.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">The list.</param>
+        /// <returns></returns>
+        public static R MaxOrDefault<T, R>(this IEnumerable<T> list, Func<T, R> express) => (list != null && list.Any()) ? list.Max(express) : default(R);
+
+        /// <summary>
         /// Minimums or default.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list">The list.</param>
         /// <returns></returns>
         public static T MinOrDefault<T>(this IEnumerable<T> list) => (list != null && list.Any()) ? list.Min() : default(T);
+
+        /// <summary>
+        /// Minimums or default.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">The list.</param>
+        /// <returns></returns>
+        public static R MinOrDefault<T, R>(this IEnumerable<T> list, Func<T, R> express) => (list != null && list.Any()) ? list.Min(express) : default(R);
 
         /// <summary>
         /// Add or Update the (Concurrent) List
