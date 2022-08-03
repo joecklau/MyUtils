@@ -25,15 +25,21 @@ namespace MyUtils
         [Obsolete("Since .net 5.0, BinaryFormatter used in this method is prohibited by-default. Change to use CloneJson<T>() instead.")]
         public static T DeepClone<T>(this T source)
         {
-            if (!typeof(T).IsSerializable)
-            {
-                throw new ArgumentException("The type must be serializable.", nameof(source));
-            }
-
             // Don't serialize a null object, simply return the default for that object
             if (Object.ReferenceEquals(source, null))
             {
                 return default(T);
+            }
+
+            // primitive types and string don't need copying
+            if (typeof(T).IsPrimitive || source is string)
+            {
+                return source;
+            }
+
+            if (!typeof(T).IsSerializable)
+            {
+                throw new ArgumentException("The type must be serializable.", nameof(source));
             }
 
             IFormatter formatter = new BinaryFormatter();
@@ -60,6 +66,12 @@ namespace MyUtils
                 return default(T);
             }
 
+            // primitive types and string don't need copying
+            if (typeof(T).IsPrimitive || source is string)
+            {
+                return source;
+            }
+
             //// System.Text.Json version
             //return System.Text.Json.JsonSerializer.Deserialize<T>(System.Text.Json.JsonSerializer.Serialize(source));
 
@@ -84,6 +96,12 @@ namespace MyUtils
             if (Object.ReferenceEquals(source, null))
             {
                 return default(T);
+            }
+
+            // primitive types and string don't need copying
+            if (typeof(T).IsPrimitive || source is string)
+            {
+                return source;
             }
 
             // System.Text.Json version

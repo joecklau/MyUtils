@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
@@ -15,6 +16,21 @@ namespace MyUtils
             PropertyNameCaseInsensitive = true,
             ReadCommentHandling = JsonCommentHandling.Skip,
         };
+
+        /// <summary>
+        /// Populate properties from <paramref name="value"/> to <paramref name="target"/>.
+        /// See https://stackoverflow.com/a/30220811/4684232
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="target"></param>
+        public static void Populate<T>(this JToken value, T target) where T : class
+        {
+            using (var sr = value.CreateReader())
+            {
+                Newtonsoft.Json.JsonSerializer.CreateDefault().Populate(sr, target); // Uses the system default JsonSerializerSettings
+            }
+        }
 
         /// <summary>
         /// Fastest engine to serialize object
