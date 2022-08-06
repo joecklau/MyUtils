@@ -218,12 +218,12 @@ namespace MyUtils
             return input;
         }
 
-        public static string TrimEndRecursive(this string input, params string[] suffixesToRemove)
+        public static string TrimEndRecursive(this string input, StringComparison comparisonType, params string[] suffixesToRemove)
         {
             string result = input.ToString();
             foreach (var suffixToRemove in suffixesToRemove.WhereNotNull())
             {
-                result = result.TrimEnd(suffixToRemove, StringComparison.InvariantCultureIgnoreCase);
+                result = result.TrimEnd(suffixToRemove, comparisonType);
             }
 
             if (string.Equals(result, input))
@@ -231,7 +231,7 @@ namespace MyUtils
                 return result;
             }
 
-            return TrimEndRecursive(result, suffixesToRemove);
+            return TrimEndRecursive(result, comparisonType, suffixesToRemove);
         }
 
         /// <summary>
