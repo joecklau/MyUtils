@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -43,8 +44,11 @@ namespace MyUtils
         /// Newtonsoft engine to serialize object
         /// </summary>
         /// <param name="src"></param>
+        /// <param name="ignoreNullValue">Ignore (exclude) null value property in the result json</param>
         /// <returns></returns>
-        public static string ToNewtonsoftJson(this object src, Newtonsoft.Json.Formatting formatting = Newtonsoft.Json.Formatting.None) => Newtonsoft.Json.JsonConvert.SerializeObject(src, formatting);
+        public static string ToNewtonsoftJson(this object src, Newtonsoft.Json.Formatting formatting = Newtonsoft.Json.Formatting.None, bool ignoreNullValue = false)
+            => ignoreNullValue ? Newtonsoft.Json.JsonConvert.SerializeObject(src, formatting, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }) :
+            Newtonsoft.Json.JsonConvert.SerializeObject(src, formatting);
 
         /// <summary>
         /// Use dotnet core default <see cref="JsonSerializer"/> to <see cref="JsonSerializer.Serialize"/> <paramref name="obj"/>
@@ -52,6 +56,6 @@ namespace MyUtils
         /// <param name="obj"></param>
         /// <param name="writeIndented"></param>
         /// <returns></returns>
-        public static string ToJson(this object obj, bool writeIndented = false) => JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = writeIndented });
+        public static string ToJson(this object obj, bool writeIndented = false) => System.Text.Json.JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = writeIndented });
     }
 }

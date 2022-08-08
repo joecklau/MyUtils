@@ -45,7 +45,15 @@ namespace MyUtils.Extensions
                         string waitToRetryMsg = $"Wait {wait.TotalSeconds}s for {attempt}th retry";
                         if (result.Result != null)
                         {
-                            var textContent = result.Result.Content.ReadAsStringAsync();
+                            string textContent = null;
+                            try
+                            {
+                                textContent = result.Result.Content.ReadAsStringAsync().Result;
+                            }
+                            finally { 
+                                // Do nothing. Normal for 404 response
+                            }
+
                             if (result.Exception is null)
                             {
                                 logger?.LogWarningWithCaller($"{waitToRetryMsg} for the error when {result.Result.RequestMessage.Method} {result.Result.RequestMessage.RequestUri}. StatusCode: {result.Result.StatusCode}. Content: {textContent}");
