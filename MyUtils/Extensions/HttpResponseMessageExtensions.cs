@@ -35,6 +35,7 @@ namespace MyUtils.Extensions
                 // ---> System.Threading.Tasks.TaskCanceledException: The operation was canceled.
                 // ---> System.IO.IOException: Unable to read data from the transport connection: The I/O operation has been aborted because of either a thread exit or an application request..
                 // ---> System.Net.Sockets.SocketException (995): The I/O operation has been aborted because of either a thread exit or an application request.
+                .Or<TimeoutException>()
                 .OrInner<TimeoutException>()
 
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
