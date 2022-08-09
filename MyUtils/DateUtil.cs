@@ -50,6 +50,20 @@ namespace MyUtils
         //public DateTime Today { get { return Now.Date; } }
 
         /// <summary>
+        /// Assume <paramref name="dtInUtc"/> is representing UTC datetime no matter it's end with 'Z' or missing it
+        /// </summary>
+        /// <param name="dtInUtc"></param>
+        /// <returns></returns>
+        public static DateTime ParseUtcString(this string dtInUtc)
+        {
+            if (!dtInUtc.Contains("+") && !dtInUtc.InvariantEndsWith("Z"))
+            {
+                dtInUtc = dtInUtc + "Z";
+            }
+            return DateTime.Parse(dtInUtc, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+        }
+
+        /// <summary>
         /// Minimum date accepted in the system
         /// </summary>
         public static DateTime MIN
