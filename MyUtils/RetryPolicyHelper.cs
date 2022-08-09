@@ -3,6 +3,7 @@ using MyUtils;
 using Polly;
 using System;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace MyUtils
@@ -20,7 +21,8 @@ namespace MyUtils
         public static Task<T> RetryPolicyForHttpQuery<T>(this Task<T> getTask,
             ILogger logger = null,
             string actionMsgToLog = null,
-            System.Threading.CancellationToken cancellationToken = default)
+            System.Threading.CancellationToken cancellationToken = default,
+            [CallerMemberName] string caller = null)
         {
             return Polly.Policy<T>
                 //.Handle<Exception>(ex => ex is not TaskCanceledException and not OperationCanceledException and not UnauthorizedAccessException)
@@ -46,11 +48,11 @@ namespace MyUtils
                         string waitToRetryMsg = $"Wait {wait.TotalSeconds}s for {attempt}th retry";
                         if (result.Exception is null)
                         {
-                            logger?.LogWarningWithCaller($"{waitToRetryMsg} for the error on {actionMsgToLog}.");
+                            logger?.LogWarningWithCaller($"{waitToRetryMsg} for the error on {actionMsgToLog}.", caller: caller);
                         }
                         else
                         {
-                            logger?.LogWarningWithCaller(result.Exception, $"{waitToRetryMsg} for the error on {actionMsgToLog}.");
+                            logger?.LogWarningWithCaller(result.Exception, $"{waitToRetryMsg} for the error on {actionMsgToLog}.", caller: caller);
                         }
 
                     })

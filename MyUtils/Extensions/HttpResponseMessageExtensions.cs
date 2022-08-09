@@ -4,6 +4,7 @@ using Polly.Extensions.Http;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,7 +22,8 @@ namespace MyUtils.Extensions
         /// <returns></returns>
         public static Task<HttpResponseMessage> RetryForTransientHttpErrorOnQuery(this Task<HttpResponseMessage> getTask,
             ILogger logger = null,
-            System.Threading.CancellationToken cancellationToken = default)
+            System.Threading.CancellationToken cancellationToken = default,
+            [CallerMemberName] string caller = null)
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
@@ -56,11 +58,11 @@ namespace MyUtils.Extensions
 
                             if (result.Exception is null)
                             {
-                                logger?.LogWarningWithCaller($"{waitToRetryMsg} for the error when {result.Result.RequestMessage.Method} {result.Result.RequestMessage.RequestUri}. StatusCode: {result.Result.StatusCode}. Content: {textContent}");
+                                logger?.LogWarningWithCaller($"{waitToRetryMsg} for the error when {result.Result.RequestMessage.Method} {result.Result.RequestMessage.RequestUri}. StatusCode: {result.Result.StatusCode}. Content: {textContent}", caller: caller);
                             }
                             else
                             {
-                                logger?.LogWarningWithCaller(result.Exception, $"{waitToRetryMsg} for the error when {result.Result.RequestMessage.Method} {result.Result.RequestMessage.RequestUri}. StatusCode: {result.Result.StatusCode}. Content: {textContent}");
+                                logger?.LogWarningWithCaller(result.Exception, $"{waitToRetryMsg} for the error when {result.Result.RequestMessage.Method} {result.Result.RequestMessage.RequestUri}. StatusCode: {result.Result.StatusCode}. Content: {textContent}", caller: caller);
                             }
                             result.Result.Dispose();
                             return;
@@ -68,11 +70,11 @@ namespace MyUtils.Extensions
 
                         if (result.Exception is null)
                         {
-                            logger?.LogWarningWithCaller($"{waitToRetryMsg} for the error.");
+                            logger?.LogWarningWithCaller($"{waitToRetryMsg} for the error.", caller: caller);
                         }
                         else
                         {
-                            logger?.LogWarningWithCaller(result.Exception, $"{waitToRetryMsg} for the error.");
+                            logger?.LogWarningWithCaller(result.Exception, $"{waitToRetryMsg} for the error.", caller: caller);
                         }
 
                     })
@@ -87,7 +89,7 @@ namespace MyUtils.Extensions
         }
 
 
-        public static HttpResponseMessage EnsureSuccessStatusCodeWithContentLog(this HttpResponseMessage httpResponseMessage, ILogger logger)
+        public static HttpResponseMessage EnsureSuccessStatusCodeWithContentLog(this HttpResponseMessage httpResponseMessage, ILogger logger, [CallerMemberName] string caller = null)
         {
             try
             {
@@ -98,11 +100,11 @@ namespace MyUtils.Extensions
                 try
                 {
                     var contentText = httpResponseMessage.Content.ReadAsStringAsync().Result;
-                    logger?.LogWarningWithCaller($"{httpResponseMessage.RequestMessage.Method} {httpResponseMessage.RequestMessage.RequestUri} return {httpResponseMessage.StatusCode} with content: {contentText}");
+                    logger?.LogWarningWithCaller($"{httpResponseMessage.RequestMessage.Method} {httpResponseMessage.RequestMessage.RequestUri} return {httpResponseMessage.StatusCode} with content: {contentText}", caller: caller);
                 }
                 catch(Exception ex)
                 {
-                    logger?.LogWarningWithCaller(ex, $"Fail to read response text for {httpResponseMessage.RequestMessage.Method} {httpResponseMessage.RequestMessage.RequestUri}");
+                    logger?.LogWarningWithCaller(ex, $"Fail to read response text for {httpResponseMessage.RequestMessage.Method} {httpResponseMessage.RequestMessage.RequestUri}", caller: caller);
                 }
 
                 throw;
