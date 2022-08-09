@@ -50,7 +50,7 @@ namespace MyUtils.Extensions
                             {
                                 textContent = result.Result.Content.ReadAsStringAsync().Result;
                             }
-                            finally { 
+                            catch { 
                                 // Do nothing. Normal for 404 response
                             }
 
@@ -98,11 +98,11 @@ namespace MyUtils.Extensions
                 try
                 {
                     var contentText = httpResponseMessage.Content.ReadAsStringAsync().Result;
-                    logger?.LogError($"{httpResponseMessage.RequestMessage.Method} {httpResponseMessage.RequestMessage.RequestUri} return {httpResponseMessage.StatusCode} with content: {contentText}");
+                    logger?.LogWarningWithCaller($"{httpResponseMessage.RequestMessage.Method} {httpResponseMessage.RequestMessage.RequestUri} return {httpResponseMessage.StatusCode} with content: {contentText}");
                 }
                 catch(Exception ex)
                 {
-                    logger?.LogError(ex, $"Fail to read response text for {httpResponseMessage.RequestMessage.Method} {httpResponseMessage.RequestMessage.RequestUri}");
+                    logger?.LogWarningWithCaller(ex, $"Fail to read response text for {httpResponseMessage.RequestMessage.Method} {httpResponseMessage.RequestMessage.RequestUri}");
                 }
 
                 throw;
