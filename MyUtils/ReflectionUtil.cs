@@ -61,5 +61,32 @@ namespace MyUtils
             }
         }
 
+        static public bool TryParallelInvoke(this EventHandler @event, object sender, ILogger logger, [CallerMemberName] string caller = null)
+        {
+            try
+            {
+                @event?.ParallelInvoke(sender, EventArgs.Empty);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogErrorWithCaller(ex, caller: caller);
+                return false;
+            }
+        }
+
+        static public bool TryInvoke(this EventHandler @event, object sender, ILogger logger, [CallerMemberName] string caller = null)
+        {
+            try
+            {
+                @event?.Invoke(sender, EventArgs.Empty);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogErrorWithCaller(ex, caller: caller);
+                return false;
+            }
+        }
     }
 }
