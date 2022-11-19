@@ -233,14 +233,16 @@ namespace MyUtils
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <param name="inboundList"></param>
-        public static void AddRange<T>(this HashSet<T> list, IEnumerable<T> inboundList)
+        public static HashSet<T> AddRange<T>(this HashSet<T> list, IEnumerable<T> inboundList)
         {
-            if (inboundList == null) return;
+            if (inboundList == null) return list;
 
             foreach (var item in inboundList)
             {
                 list.Add(item);
             }
+
+            return list;
         }
 
         public static List<T> Intersect<T>(params IEnumerable<T>[] lists)
