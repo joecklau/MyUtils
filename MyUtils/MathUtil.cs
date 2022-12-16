@@ -5,6 +5,50 @@ namespace MyUtils
     public static class MathUtil
     {
         /// <summary>
+        /// Greatest Common Divisor from https://stackoverflow.com/a/20824923/4684232
+        /// </summary>
+        public static int Gfc(int a, int b)
+        {
+            while (b != 0)
+            {
+                int temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        /// <summary>
+        /// Least Common Multiple from https://stackoverflow.com/a/20824923/4684232
+        /// </summary>
+        public static int Lcm(int a, int b)
+        {
+            return (a / Gfc(a, b)) * b;
+        }
+
+        /// <summary>
+        /// Greatest Common Divisor from https://stackoverflow.com/a/20824923/4684232
+        /// </summary>
+        public static decimal Gfc(decimal a, decimal b)
+        {
+            while (b != 0)
+            {
+                decimal temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        /// <summary>
+        /// Least Common Multiple from https://stackoverflow.com/a/20824923/4684232
+        /// </summary>
+        public static decimal Lcm(decimal a, decimal b)
+        {
+            return (a / Gfc(a, b)) * b;
+        }
+
+        /// <summary>
         /// Limit the <paramref name="value"/> to be within <paramref name="minValue"/> and <paramref name="maxValue"/> inclusively
         /// </summary>
         /// <param name="value"></param>
