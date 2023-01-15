@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -7,6 +8,56 @@ namespace MyUtils
 {
     public static class SecurityUtil
     {
+        /// <summary>
+        /// Encrypt <paramref name="plaintext"/> to Base64 string
+        /// </summary>
+        /// <param name="plaintext"></param>
+        /// <param name="cryptoKey"></param>
+        /// <returns></returns>
+        public static string AesEncryptBase64(this string plaintext, string cryptoKey)
+        {
+            using var aes = Aes.Create();
+            using var md5 = MD5.Create();
+            using var sha256 = SHA256.Create();
+
+            byte[] key = sha256.ComputeHash(Encoding.UTF8.GetBytes(cryptoKey));
+            byte[] iv = md5.ComputeHash(Encoding.UTF8.GetBytes(cryptoKey));
+            aes.Key = key;
+            aes.IV = iv;
+
+            byte[] dataByteArray = Encoding.UTF8.GetBytes(plaintext);
+            MemoryStream ms = new MemoryStream();
+            CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write);
+
+            cs.Write(dataByteArray, 0, dataByteArray.Length);
+            cs.FlushFinalBlock();
+            return Convert.ToBase64String(ms.ToArray());
+        }
+
+        /// <summary>
+        /// Decrypt <paramref name="ciphertext"/> to plaintext
+        /// </summary>
+        /// <param name="ciphertext"></param>
+        /// <param name="cryptoKey"></param>
+        /// <returns></returns>
+        public static string AesDecryptBase64(string ciphertext, string cryptoKey)
+        {
+            AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
+            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+            SHA256CryptoServiceProvider sha256 = new SHA256CryptoServiceProvider();
+            byte[] key = sha256.ComputeHash(Encoding.UTF8.GetBytes(cryptoKey));
+            byte[] iv = md5.ComputeHash(Encoding.UTF8.GetBytes(cryptoKey));
+            aes.Key = key;
+            aes.IV = iv;
+
+            byte[] dataByteArray = Convert.FromBase64String(ciphertext);
+            using MemoryStream ms = new MemoryStream();
+            using CryptoStream cs = new CryptoStream(ms, aes.CreateDecryptor(), CryptoStreamMode.Write);
+            cs.Write(dataByteArray, 0, dataByteArray.Length);
+            cs.FlushFinalBlock();
+            return Encoding.UTF8.GetString(ms.ToArray());
+        }
+
         public static string HashSHA1(this string input)
         {
             using (SHA1Managed sha1 = new SHA1Managed())
