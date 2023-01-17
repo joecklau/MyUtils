@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
@@ -32,6 +33,30 @@ namespace MyUtils
             cs.Write(dataByteArray, 0, dataByteArray.Length);
             cs.FlushFinalBlock();
             return Convert.ToBase64String(ms.ToArray());
+        }
+
+        /// <summary>
+        /// <inheritdoc cref="AesDecryptBase64(string, string)"/>
+        /// </summary>
+        /// <param name="ciphertext"></param>
+        /// <param name="cryptoKey"></param>
+        /// <param name="plainText"></param>
+        /// <param name="logger"></param>
+        /// <returns></returns>
+        public static bool TryAesDecryptBase64(string ciphertext, string cryptoKey, out string plainText, ILogger logger = null)
+        {
+            plainText = null;
+            try
+            {
+                plainText = AesDecryptBase64(ciphertext, cryptoKey);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger?.LogErrorWithCaller(ex);
+            }
+
+            return false;
         }
 
         /// <summary>
