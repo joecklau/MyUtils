@@ -25,6 +25,7 @@ namespace MyUtils
         /// <typeparam name="T"></typeparam>
         /// <param name="value"></param>
         /// <param name="target"></param>
+        [Obsolete("Use native method target.Merge(value) instead")]
         public static void Populate<T>(this JToken value, T target) where T : class
         {
             using (var sr = value.CreateReader())
