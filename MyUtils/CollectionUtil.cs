@@ -10,7 +10,34 @@ using System.Threading.Tasks;
 namespace MyUtils
 {
     public static class CollectionUtil
-    {
+    {    /// <summary>
+         /// Used in Shuffle(T).
+         /// </summary>
+        private static Random _random = new Random();
+
+        /// <summary>
+        /// Shuffle the array by high-performance Fisher-Yates shuffle
+        /// </summary>
+        /// <remarks>
+        /// I do not want to return as I want to express that the shuffle effect will persist in <paramref name="array"/>.
+        /// Referring to https://www.dotnetperls.com/fisher-yates-shuffle</remarks>
+        /// <typeparam name="T">Array element type.</typeparam>
+        /// <param name="array">Array to shuffle.</param>
+        public static void Shuffle<T>(this T[] array)
+        {
+            int n = array.Length;
+            for (int i = 0; i < (n - 1); i++)
+            {
+                // Use Next on random instance with an argument.
+                // ... The argument is an exclusive bound.
+                //     So we will not go past the end of the array.
+                int r = i + _random.Next(n - i);
+                T t = array[r];
+                array[r] = array[i];
+                array[i] = t;
+            }
+        }
+
         /// <summary>
         /// Chunking option 1 from https://stackoverflow.com/a/47683453
         /// </summary>
