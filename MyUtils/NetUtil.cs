@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -61,19 +62,31 @@ namespace MyUtils
             // form.  We will look through the list, and if our port we would like to use
             // in our TcpClient is occupied, we will set isAvailable to false.
             IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-            TcpConnectionInformation[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
 
-            foreach (TcpConnectionInformation tcpi in tcpConnInfoArray)
-            {
-                if (tcpi.LocalEndPoint.Port == port)
-                {
-                    //isAvailable = false;
-                    //break;
-                    return false;
-                }
-            }
+            // Joe's normal usage: Not just Active TCP connections, but also the current port listeners should also be counted
+            int[] connectedOrOccupiedPorts = ipGlobalProperties.GetActiveTcpConnections().Select(x => x.LocalEndPoint)
+                .Concat(ipGlobalProperties.GetActiveTcpListeners())
+                .Concat(ipGlobalProperties.GetActiveUdpListeners())
+                .Select(x => x.Port)
+                .Distinct()
+                .OrderBy()
+                .ToArray();
+            
+            return !connectedOrOccupiedPorts.Contains(port);
 
-            return true;
+            // Original version from https://stackoverflow.com/a/570461/4684232 which only check CONNECTED ports, but not LISTENING ports (e.g. 80, 443 ports of web server)
+            //TcpConnectionInformation[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
+            //foreach (TcpConnectionInformation tcpi in tcpConnInfoArray)
+            //{
+            //    if (tcpi.LocalEndPoint.Port == port)
+            //    {
+            //        //isAvailable = false;
+            //        //break;
+            //        return false;
+            //    }
+            //}
+
+            //return true;
         }
 
         /// <summary>
