@@ -75,6 +75,19 @@ namespace MyUtils
         }
 
         /// <summary>
+        /// Limit the <paramref name="value"/> to be within <paramref name="minValue"/> and <paramref name="maxValue"/> inclusively
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="minValue"></param>
+        /// <param name="maxValue"></param>
+        /// <returns></returns>
+        public static decimal LimitToRange(this decimal value, decimal minValue, decimal maxValue)
+        {
+            if (minValue > maxValue) throw new ArgumentException($"{nameof(minValue)} {minValue} is not larger than {nameof(maxValue)} {maxValue}, which is invalid.");
+            return Math.Max(Math.Min(value, maxValue), minValue);
+        }
+
+        /// <summary>
         /// Get Larger one between <paramref name="value"/> and <paramref name="other"/>
         /// </summary>
         /// <param name="value"></param>
@@ -91,6 +104,14 @@ namespace MyUtils
         public static double AtLeast(this double value, double other) => Math.Max(value, other);
 
         /// <summary>
+        /// Get Larger one between <paramref name="value"/> and <paramref name="other"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static decimal AtLeast(this decimal value, decimal other) => Math.Max(value, other);
+
+        /// <summary>
         /// Get Smaller one between <paramref name="value"/> and <paramref name="other"/>
         /// </summary>
         /// <param name="value"></param>
@@ -105,6 +126,14 @@ namespace MyUtils
         /// <param name="other"></param>
         /// <returns></returns>
         public static double AtMost(this double value, double other) => Math.Min(value, other);
+
+        /// <summary>
+        /// Get Smaller one between <paramref name="value"/> and <paramref name="other"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static decimal AtMost(this decimal value, decimal other) => Math.Min(value, other);
 
     }
 }
