@@ -8,6 +8,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MyUtils
 {
@@ -48,12 +49,60 @@ namespace MyUtils
         }
 
         /// <summary>
+        /// Windows will reserve some ports even they are not used yet. See https://superuser.com/questions/1486417/unable-to-start-kestrel-getting-an-attempt-was-made-to-access-a-socket-in-a-way
+        /// </summary>
+        /// <returns></returns>
+        public static List<(int start, int end)> GetWindowsReservedPortRanges()
+        {
+            if (Environment.OSVersion.Platform != PlatformID.Win32NT)
+            {
+                return new List<(int start, int end)>();
+            }
+
+            // Start the child process.
+            Process p = new Process();
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            // Redirect the output stream of the child process.
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.FileName = "netsh";
+            p.StartInfo.Arguments = "interface ipv4 show excludedportrange protocol=tcp";
+            p.Start();
+            // Do not wait for the child process to exit before
+            // reading to the end of its redirected stream.
+            // p.WaitForExit();
+            // Read the output stream first and then wait.
+            string output = p.StandardOutput.ReadToEnd();
+            p.WaitForExit();
+
+            var lines = output.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            var portRanges = lines.Select(text => Regex.Match(text, "^ *([0-9]+) +([0-9]+)"))
+                .Where(x => x.Success)
+                .Select(x => (int.Parse(x.Groups[1].Value), int.Parse(x.Groups[2].Value)))
+                .ToList();
+
+            return portRanges;
+        }
+
+        /// <summary>
         /// Check if a Local TCP port is available
         /// </summary>
         /// <param name="port"></param>
+        /// <param name="scanWindowsReservedPorts">
+        /// Invoke <see cref="GetWindowsReservedPortRanges"/> before check availability. 
+        /// If you're going to call this method on a list of ports, you should consider pre-filtering the ports with <see cref="GetWindowsReservedPortRanges"/> rather than using this as this will repeat call the method</param>
         /// <returns></returns>
-        public static bool CheckLocalTcpPortAvailable(int port)
+        public static bool CheckLocalTcpPortAvailable(int port, bool scanWindowsReservedPorts = false)
         {
+            if (scanWindowsReservedPorts)
+            {
+                var windowsReservedPortRanges = GetWindowsReservedPortRanges();
+                if (windowsReservedPortRanges.Any(x => port >= x.start && port <= x.end))
+                {
+                    return false;
+                }
+            }
+
             //int port = 456; //<--- This is your value
             //bool isAvailable = true;
 
@@ -109,12 +158,14 @@ namespace MyUtils
         /// <param name="minValue"></param>
         /// <param name="maxValue"></param>
         /// <returns></returns>
-        public static int GetAvailableLocalTcpPort(int minValue = 49152, int maxValue = 65535, int maxTrialLimit = 30)
+        public static int GetAvailableLocalTcpPort(int minValue = 49152, int maxValue = 65535, int maxTrialLimit = 30, bool scanWindowsReservedPorts = false)
         {
             if (minValue < 0 || maxValue > 65535)
             {
                 throw new ArgumentOutOfRangeException("A valid TCP port should be within 0 to 65535");
             }
+
+            var windowsReservedPortRanges = scanWindowsReservedPorts ? GetWindowsReservedPortRanges() : new List<(int start, int end)>();
 
             var rand = new Random();
             int trialCount = 0;
@@ -127,7 +178,7 @@ namespace MyUtils
                 {
                     throw new Exception($"After {trialCount} trials, there is still no available port within {minValue} and {maxValue}. Stop trying.");
                 }
-            } while (!CheckLocalTcpPortAvailable(port));
+            } while (windowsReservedPortRanges.Any(x => port >= x.start && port <= x.end) || !CheckLocalTcpPortAvailable(port, scanWindowsReservedPorts: false));
 
             return port;
         }
