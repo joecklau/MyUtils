@@ -10,6 +10,7 @@ namespace MyUtils
     public static class DateUtil
     {
         public static TimeZoneInfo EstTimeZone => TimeZoneInfo.FindSystemTimeZoneById(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Eastern Standard Time" : "America/New_York");
+        public static TimeZoneInfo CetTimeZone => TimeZoneInfo.FindSystemTimeZoneById(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Central Europe Standard Time" : "Europe/Berlin");
         public static DateTime UnixEpoch => new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         public static DateTime UtcToday => new DateTime(DateTimeOffset.UtcNow.Date.Ticks, DateTimeKind.Utc);
 
