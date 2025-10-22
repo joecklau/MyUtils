@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.IO;
 
 namespace MyUtils.SystemMemory
 {
@@ -11,8 +12,18 @@ namespace MyUtils.SystemMemory
     /// </summary>
     public class MemoryMetricsClient
     {
+        // Cached docker environment detection so we only evaluate once per process lifetime
+        private static readonly bool _isDocker = DetectDocker();
+        public static bool IsDocker => _isDocker;
+
         public MemoryMetrics GetMetrics()
         {
+            // In dockerized environment we skip executing external commands and just return empty metrics
+            if (IsDocker)
+            {
+                return new MemoryMetrics();
+            }
+
             if (IsUnix())
             {
                 return GetUnixMetrics();
@@ -27,6 +38,43 @@ namespace MyUtils.SystemMemory
                          RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 
             return isUnix;
+        }
+
+        // Performs the actual detection logic (executed once, cached in _isDocker)
+        private static bool DetectDocker()
+        {
+            try
+            {
+                var dotnetInContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
+                if (string.Equals(dotnetInContainer, "true", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ECS_CONTAINER_METADATA_URI_V4")))
+                {
+                    return true;
+                }
+
+                if (File.Exists("/.dockerenv"))
+                {
+                    return true;
+                }
+
+                if (File.Exists("/proc/1/cgroup"))
+                {
+                    var cgroup = File.ReadAllText("/proc/1/cgroup");
+                    if (cgroup.Contains("docker") || cgroup.Contains("kubepods") || cgroup.Contains("containerd"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                // Ignore detection errors, default to false
+            }
+            return false;
         }
 
         private MemoryMetrics GetWindowsMetrics()
@@ -70,7 +118,6 @@ namespace MyUtils.SystemMemory
                 //Console.WriteLine(output);
             }
 
-            // It happens when running in some docker images, especially Run in Linux Docker on Windows
             if (string.IsNullOrWhiteSpace(output))
             {
                 return new MemoryMetrics();
