@@ -220,5 +220,48 @@ namespace MyUtils
 
             return string.Join(", ", dateDescList);
         }
+
+        /// <summary>
+        /// Returns the start of the day (midnight, 00:00:00) for <paramref name="date"/>.
+        /// </summary>
+        public static DateTime StartOfDay(this DateTime date) => date.Date;
+
+        /// <summary>
+        /// Returns the first day of the month for <paramref name="date"/> at midnight.
+        /// </summary>
+        public static DateTime StartOfMonth(this DateTime date) => new DateTime(date.Year, date.Month, 1, 0, 0, 0, date.Kind);
+
+        /// <summary>
+        /// Returns the last moment of the last day of the month for <paramref name="date"/> (23:59:59).
+        /// Consistent with <see cref="EndOfDay"/>.
+        /// </summary>
+        public static DateTime EndOfMonth(this DateTime date) => new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month)).EndOfDay();
+
+        /// <summary>
+        /// Returns true if <paramref name="date"/> falls on a Saturday or Sunday.
+        /// </summary>
+        public static bool IsWeekend(this DateTime date) => date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
+
+        /// <summary>
+        /// Returns true if <paramref name="date"/> falls on a Monday through Friday.
+        /// </summary>
+        public static bool IsWeekday(this DateTime date) => !date.IsWeekend();
+
+        /// <summary>
+        /// Adds <paramref name="workDays"/> business days (Mon–Fri) to <paramref name="date"/>, skipping weekends.
+        /// If <paramref name="date"/> itself is a weekend, the first step moves to the next calendar day
+        /// in the given direction before counting.
+        /// </summary>
+        public static DateTime AddWorkDays(this DateTime date, int workDays)
+        {
+            int direction = workDays < 0 ? -1 : 1;
+            int remaining = Math.Abs(workDays);
+            while (remaining > 0)
+            {
+                date = date.AddDays(direction);
+                if (date.IsWeekday()) remaining--;
+            }
+            return date;
+        }
     }
 }

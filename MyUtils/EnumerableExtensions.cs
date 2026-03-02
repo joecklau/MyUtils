@@ -375,5 +375,20 @@ namespace MyUtils
         {
             return sortOrder == Direction.Ascending ? source.OrderBy(keySelector) : source.OrderByDescending(keySelector);
         }
+
+        /// <summary>
+        /// Returns true if <paramref name="source"/> is null or contains no elements.
+        /// </summary>
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> source) => source == null || !source.Any();
+
+        /// <summary>
+        /// Executes <paramref name="action"/> for each element in <paramref name="source"/>.
+        /// </summary>
+        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (action == null) throw new ArgumentNullException(nameof(action));
+            foreach (var item in source) action(item);
+        }
     }
 }
