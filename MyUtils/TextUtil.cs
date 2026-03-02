@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace MyUtils
@@ -399,5 +400,59 @@ namespace MyUtils
                 default: return input.First().ToString().ToUpper() + input.Substring(1);
             }
         }
+
+        /// <summary>
+        /// Shorthand for <see cref="string.IsNullOrEmpty(string)"/>
+        /// </summary>
+        public static bool IsNullOrEmpty(this string value) => string.IsNullOrEmpty(value);
+
+        /// <summary>
+        /// Shorthand for <see cref="string.IsNullOrWhiteSpace(string)"/>
+        /// </summary>
+        public static bool IsNullOrWhiteSpace(this string value) => string.IsNullOrWhiteSpace(value);
+
+        /// <summary>
+        /// Safely parse <paramref name="value"/> to <see cref="int"/>, returning <paramref name="defaultValue"/> if parsing fails.
+        /// </summary>
+        public static int ToIntOrDefault(this string value, int defaultValue = 0) =>
+            int.TryParse(value, out var result) ? result : defaultValue;
+
+        /// <summary>
+        /// Safely parse <paramref name="value"/> to <see cref="decimal"/>, returning <paramref name="defaultValue"/> if parsing fails.
+        /// </summary>
+        public static decimal ToDecimalOrDefault(this string value, decimal defaultValue = 0m) =>
+            decimal.TryParse(value, out var result) ? result : defaultValue;
+
+        /// <summary>
+        /// Safely parse <paramref name="value"/> to <see cref="double"/>, returning <paramref name="defaultValue"/> if parsing fails.
+        /// </summary>
+        public static double ToDoubleOrDefault(this string value, double defaultValue = 0.0) =>
+            double.TryParse(value, out var result) ? result : defaultValue;
+
+        /// <summary>
+        /// Repeat <paramref name="value"/> <paramref name="count"/> times.
+        /// </summary>
+        public static string Repeat(this string value, int count)
+        {
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count), "count must be non-negative.");
+            if (string.IsNullOrEmpty(value) || count == 0) return string.Empty;
+            var sb = new StringBuilder(value.Length * count);
+            for (int i = 0; i < count; i++) sb.Append(value);
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Encode <paramref name="value"/> to a Base64 string using UTF-8 encoding.
+        /// Returns null if <paramref name="value"/> is null.
+        /// </summary>
+        public static string ToBase64(this string value) =>
+            value is null ? null : Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+
+        /// <summary>
+        /// Decode a Base64-encoded string back to the original UTF-8 string.
+        /// Returns null if <paramref name="value"/> is null.
+        /// </summary>
+        public static string FromBase64(this string value) =>
+            value is null ? null : Encoding.UTF8.GetString(Convert.FromBase64String(value));
     }
 }
